@@ -497,7 +497,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-23 12:14:34" itemprop="dateModified" datetime="2019-07-23T12:14:34+08:00">2019-07-23</time>
+                <time title="修改时间：2019-07-23 12:16:54" itemprop="dateModified" datetime="2019-07-23T12:16:54+08:00">2019-07-23</time>
               </span>
             
           
@@ -565,42 +565,31 @@
 <h1 id="插件的使用"><a href="#插件的使用" class="headerlink" title="插件的使用"></a>插件的使用</h1><h2 id="挂载点，我们需要把要生成的二维码挂载都哪里"><a href="#挂载点，我们需要把要生成的二维码挂载都哪里" class="headerlink" title="挂载点，我们需要把要生成的二维码挂载都哪里"></a>挂载点，我们需要把要生成的二维码挂载都哪里</h2><blockquote>
 <p>首先要在模版中添加一个id=qrcode的div标签    </p>
 </blockquote>
-<pre><code class="html"><span class="tag">&lt;<span class="name">template</span>&gt;</span>
-    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"qrcode"</span>&gt;</span>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"qrcode"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">```   </span><br><span class="line"></span><br><span class="line">## 生成函数</span><br><span class="line">&gt;二维码是通过canvas标签绘制出来的，所以我们需要一个函数去生成。函数放在了methods里面。</span><br><span class="line">```javascript  </span><br><span class="line">qrcode()&#123;</span><br><span class="line">    document.getElementById("qrcode").innerHTML = ""; //清除上次二维码的数据</span><br><span class="line">    let qrcode = new QRcode('qrcode',&#123;</span><br><span class="line">        width:100,</span><br><span class="line">        height:100,</span><br><span class="line">        text:"你是不是在做梦哦",</span><br><span class="line"></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
 
-    <span class="tag">&lt;/<span class="name">div</span>&gt;</span>
-<span class="tag">&lt;/<span class="name">template</span>&gt;</span></code></pre>
-<h2 id="生成函数"><a href="#生成函数" class="headerlink" title="生成函数"></a>生成函数</h2><blockquote>
-<p>二维码是通过canvas标签绘制出来的，所以我们需要一个函数去生成。函数放在了methods里面。</p>
-<pre><code class="javascript">qrcode(){
-    <span class="built_in">document</span>.getElementById(<span class="string">"qrcode"</span>).innerHTML = <span class="string">""</span>; <span class="comment">//清除上次二维码的数据</span>
-    <span class="keyword">let</span> qrcode = <span class="keyword">new</span> QRcode(<span class="string">'qrcode'</span>,{
-        width:<span class="number">100</span>,
-        height:<span class="number">100</span>,
-        text:<span class="string">"你是不是在做梦哦"</span>,</code></pre>
+<h2 id="执行函数"><a href="#执行函数" class="headerlink" title="执行函数"></a>执行函数</h2><blockquote>
+<p>这里需要值得注意的是，因为二维码是通过canvas画出来然后挂载到div上的，所以我们在什么时候画就比较关键了。根据vue的生命周期，我们要将qrcode函数放到mounted函数中执行，如果在放在这个函数之前的生命周期函数中执行，就导致错误，因为id=“qrcode”的div还没有生成。</p>
 </blockquote>
-<pre><code>})</code></pre><p>},</p>
-<pre><code>
-## 执行函数
-&gt;这里需要值得注意的是，因为二维码是通过canvas画出来然后挂载到div上的，所以我们在什么时候画就比较关键了。根据vue的生命周期，我们要将qrcode函数放到mounted函数中执行，如果在放在这个函数之前的生命周期函数中执行，就导致错误，因为id=“qrcode”的div还没有生成。
-
-# 下载
-&gt;我这里的下载思路是根据广大的互联网学习来的，因为要下载所以我们得这个canvas转换为图片，但是仅仅转换为图片用户也只能通过右键进行下载，用户体验不好。这时候我们往往希望有个下载按钮可以点击下载。     
-
-&gt;主要的思路就是：  
-1. 获取到canvas标签；
-2. 生成一个a标签；
-3. 把canvas转化为图片然后放到文件夹中，再把图片信息挂载到a标签的属性上；
-4. 给图片一个下载名，然后触发a标签的click事件；      
-
-```js
-download(){
-    let myCanvas = document.getElementById(&apos;qrcode&apos;).getElementsByTagName(&apos;canvas&apos;);
-    let a = document.createElement(&quot;a&quot;)
-    a.href = myCanvas[0].toDataURL(&apos;image/png&apos;).replace(&apos;image/png&apos;, &apos;image/octet-stream&apos;)
-    a.download = &quot;文件名&quot;;
+<h1 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h1><blockquote>
+<p>我这里的下载思路是根据广大的互联网学习来的，因为要下载所以我们得这个canvas转换为图片，但是仅仅转换为图片用户也只能通过右键进行下载，用户体验不好。这时候我们往往希望有个下载按钮可以点击下载。     </p>
+</blockquote>
+<blockquote>
+<p>主要的思路就是：  </p>
+<ol>
+<li>获取到canvas标签；</li>
+<li>生成一个a标签；</li>
+<li>把canvas转化为图片然后放到文件夹中，再把图片信息挂载到a标签的属性上；</li>
+<li>给图片一个下载名，然后触发a标签的click事件；      </li>
+</ol>
+</blockquote>
+<pre><code class="js">download(){
+    <span class="keyword">let</span> myCanvas = <span class="built_in">document</span>.getElementById(<span class="string">'qrcode'</span>).getElementsByTagName(<span class="string">'canvas'</span>);
+    <span class="keyword">let</span> a = <span class="built_in">document</span>.createElement(<span class="string">"a"</span>)
+    a.href = myCanvas[<span class="number">0</span>].toDataURL(<span class="string">'image/png'</span>).replace(<span class="string">'image/png'</span>, <span class="string">'image/octet-stream'</span>)
+    a.download = <span class="string">"文件名"</span>;
     a.click();
 },</code></pre>
+
           
         
       
