@@ -497,7 +497,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-23 12:04:13" itemprop="dateModified" datetime="2019-07-23T12:04:13+08:00">2019-07-23</time>
+                <time title="修改时间：2019-07-23 12:10:48" itemprop="dateModified" datetime="2019-07-23T12:10:48+08:00">2019-07-23</time>
               </span>
             
           
@@ -565,11 +565,12 @@
 <h1 id="插件的使用"><a href="#插件的使用" class="headerlink" title="插件的使用"></a>插件的使用</h1><h2 id="挂载点，我们需要把要生成的二维码挂载都哪里"><a href="#挂载点，我们需要把要生成的二维码挂载都哪里" class="headerlink" title="挂载点，我们需要把要生成的二维码挂载都哪里"></a>挂载点，我们需要把要生成的二维码挂载都哪里</h2><blockquote>
 <p>首先要在模版中添加一个id=qrcode的div标签    </p>
 </blockquote>
-<pre><code>&lt;template&gt;
-    &lt;div id=&quot;qrcode&quot;&gt;
+<pre><code class="html"><span class="tag">&lt;<span class="name">template</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"qrcode"</span>&gt;</span>
 
-    &lt;/div&gt;
-&lt;/template&gt;</code></pre><h2 id="生成函数"><a href="#生成函数" class="headerlink" title="生成函数"></a>生成函数</h2><blockquote>
+    <span class="tag">&lt;/<span class="name">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="name">template</span>&gt;</span></code></pre>
+<h2 id="生成函数"><a href="#生成函数" class="headerlink" title="生成函数"></a>生成函数</h2><blockquote>
 <p>二维码是通过canvas标签绘制出来的，所以我们需要一个函数去生成。函数放在了methods里面。</p>
 </blockquote>
 <pre><code>qrcode(){
