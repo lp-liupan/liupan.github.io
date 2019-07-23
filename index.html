@@ -497,7 +497,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-23 12:13:05" itemprop="dateModified" datetime="2019-07-23T12:13:05+08:00">2019-07-23</time>
+                <time title="修改时间：2019-07-23 12:14:34" itemprop="dateModified" datetime="2019-07-23T12:14:34+08:00">2019-07-23</time>
               </span>
             
           
@@ -595,13 +595,11 @@
 
 ```js
 download(){
-
     let myCanvas = document.getElementById(&apos;qrcode&apos;).getElementsByTagName(&apos;canvas&apos;);
     let a = document.createElement(&quot;a&quot;)
     a.href = myCanvas[0].toDataURL(&apos;image/png&apos;).replace(&apos;image/png&apos;, &apos;image/octet-stream&apos;)
     a.download = &quot;文件名&quot;;
-    a.click()
-
+    a.click();
 },</code></pre>
           
         
