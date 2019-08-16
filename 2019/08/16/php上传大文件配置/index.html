@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="学习记录">
 <meta property="og:description" content="PHP配置问题PHP上传文件大小限制 PHP配置文件默认的post上传数据post_max_size大小为2M，默认上传文件upload_max_filesize的大小为8M。所以如果文件大小超过了默认的最大值就会出现上传失败的问题。  PHP最长执行时间限制 大文件上传失败的另一个原因就是PHP执行时间的限制问题。因为大文件的上传比较慢，而PHP默认的最长执行时间max_execut_time为">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-16T05:09:20.633Z">
+<meta property="og:updated_time" content="2019-08-16T05:12:53.476Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="php上传大文件配置">
 <meta name="twitter:description" content="PHP配置问题PHP上传文件大小限制 PHP配置文件默认的post上传数据post_max_size大小为2M，默认上传文件upload_max_filesize的大小为8M。所以如果文件大小超过了默认的最大值就会出现上传失败的问题。  PHP最长执行时间限制 大文件上传失败的另一个原因就是PHP执行时间的限制问题。因为大文件的上传比较慢，而PHP默认的最长执行时间max_execut_time为">
@@ -345,7 +345,7 @@
                 
               
 
-              <time title="创建时间：2019-08-16 09:37:34 / 修改时间：13:09:20" itemprop="dateCreated datePublished" datetime="2019-08-16T09:37:34+08:00">2019-08-16</time>
+              <time title="创建时间：2019-08-16 09:37:34 / 修改时间：13:12:53" itemprop="dateCreated datePublished" datetime="2019-08-16T09:37:34+08:00">2019-08-16</time>
             </span>
           
 
@@ -417,7 +417,7 @@
 <p>大文件上传失败的另一个原因就是PHP执行时间的限制问题。因为大文件的上传比较慢，而PHP默认的最长执行时间<code>max_execut_time</code>为30秒，如果超过了30秒脚本就会停止执行。</p>
 </blockquote>
 <h2 id="PHP配置文件的修改"><a href="#PHP配置文件的修改" class="headerlink" title="PHP配置文件的修改"></a>PHP配置文件的修改</h2><blockquote>
-<p>PHP的配置文件一般位于<code>/usr/local/php7/lib/php.ini</code>，用vim编辑器打开，进入文件后找到<code>post_max_size</code>这个变量，然后将数值修改为合适的大小。同样的将<code>upload_max_filesize</code>变量业改为合适的大小。执行时间的变量<code>max_execut_time</code>的值改为<code>0</code>表示没有时间限制。</p>
+<p>PHP的配置文件一般位于<code>/usr/local/php7/lib/php.ini</code>，用vim编辑器打开，进入文件后找到<code>post_max_size</code>这个变量，然后将数值修改为合适的大小。同样的将<code>upload_max_filesize</code>变量也改为合适的大小。执行时间的变量<code>max_execut_time</code>的值改为<code>0</code>表示没有时间限制。</p>
 </blockquote>
 <h2 id="重启PHP"><a href="#重启PHP" class="headerlink" title="重启PHP"></a>重启PHP</h2><blockquote>
 <p>修改了PHP的配置文件<code>php.ini</code>后需要对PHP进行重启，具体如何重启自行谷歌。我这里用的是最简陋的方法，先关闭<code>killall php-fpm</code>，然后在<code>/usr/local/php7/sbin</code>文件夹下启动<code>/usr/local/php7/sbin/php-fpm –c ../lib/php.ini –y ../etc/php-fpm.conf</code>。</p>
