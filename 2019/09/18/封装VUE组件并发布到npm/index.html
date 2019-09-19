@@ -102,7 +102,7 @@
 <meta property="og:description" content="前言因为项目中遇到了部分需求在网上并没有找到比较好的解决方案，所以决定自己实现。实现过后本着为劳苦大众做贡献的想法决定将其开源，顺便也学习一下开源的流程。  至于网上这么多教程，我还要单独写一篇。因为我遇到了很多坑，搞了好几天才完整的弄好，为了下次发布npm包方便，所以记录一下。  准备npm 首先需要到npm官网去注册，点这里去哦。     然后在电脑上登录1npm login    项目准备这">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://www.xiaotaotao.vip/2019/09/18/封装VUE组件并发布到npm/目录结构.png">
-<meta property="og:updated_time" content="2019-09-18T10:45:34.131Z">
+<meta property="og:updated_time" content="2019-09-19T01:45:22.159Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="封装VUE组件并发布到npm">
 <meta name="twitter:description" content="前言因为项目中遇到了部分需求在网上并没有找到比较好的解决方案，所以决定自己实现。实现过后本着为劳苦大众做贡献的想法决定将其开源，顺便也学习一下开源的流程。  至于网上这么多教程，我还要单独写一篇。因为我遇到了很多坑，搞了好几天才完整的弄好，为了下次发布npm包方便，所以记录一下。  准备npm 首先需要到npm官网去注册，点这里去哦。     然后在电脑上登录1npm login    项目准备这">
@@ -347,13 +347,21 @@
                 
               
 
-              <time title="创建时间：2019-09-18 16:44:24 / 修改时间：18:45:34" itemprop="dateCreated datePublished" datetime="2019-09-18T16:44:24+08:00">2019-09-18</time>
+              <time title="创建时间：2019-09-18 16:44:24" itemprop="dateCreated datePublished" datetime="2019-09-18T16:44:24+08:00">2019-09-18</time>
             </span>
           
 
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                <time title="修改时间：2019-09-19 09:45:22" itemprop="dateModified" datetime="2019-09-19T09:45:22+08:00">2019-09-19</time>
+              </span>
             
           
 
@@ -494,7 +502,13 @@
 
 <p>注意：可能会报错你的项目名字已经有了，这时候你需要去修改<code>package.json</code>文件中的<code>name</code>属性。     </p>
 <p>发布成功后，可以直接到npm官网上搜索你的包。</p>
-<h2 id="下载使用"><a href="#下载使用" class="headerlink" title="下载使用"></a>下载使用</h2>
+<h2 id="下载使用"><a href="#下载使用" class="headerlink" title="下载使用"></a>下载使用</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install 包名</span><br></pre></td></tr></table></figure>
+
+<p>全局引入</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> xxx <span class="keyword">from</span> <span class="string">'vue-video-tape'</span>;</span><br><span class="line">Vue.use(xxx);</span><br></pre></td></tr></table></figure>
+
+<p>组件内引入</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> VueVideoTape <span class="keyword">from</span> <span class="string">'vue-video-tape'</span>;</span><br><span class="line"></span><br><span class="line">components:&#123;VueVideoTape&#125;,</span><br></pre></td></tr></table></figure>
       
     </div>
 
