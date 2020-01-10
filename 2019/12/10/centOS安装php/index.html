@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="下载 这里使用源码安装的方式，最好是直接去官网下载压缩包。选择合适的版本，右键复制链接地址。 12345678910#源码下载文件夹cd /usr/local/src/#使用wget下载（刚才复制的链接）wget https://www.php.net/distributions/php-7.4.0.tar.xz#解压tar -Jxvf php-7.4.0.tar.xzcd php-7.4.0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="centOS7安装php">
+<meta property="og:url" content="https://www.xiaotaotao.vip/2019/12/10/centOS安装php/index.html">
+<meta property="og:site_name" content="学习记录">
+<meta property="og:description" content="下载 这里使用源码安装的方式，最好是直接去官网下载压缩包。选择合适的版本，右键复制链接地址。 12345678910#源码下载文件夹cd /usr/local/src/#使用wget下载（刚才复制的链接）wget https://www.php.net/distributions/php-7.4.0.tar.xz#解压tar -Jxvf php-7.4.0.tar.xzcd php-7.4.0">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-01-06T08:04:26.208Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="centOS7安装php">
+<meta name="twitter:description" content="下载 这里使用源码安装的方式，最好是直接去官网下载压缩包。选择合适的版本，右键复制链接地址。 12345678910#源码下载文件夹cd /usr/local/src/#使用wget下载（刚才复制的链接）wget https://www.php.net/distributions/php-7.4.0.tar.xz#解压tar -Jxvf php-7.4.0.tar.xzcd php-7.4.0">
+  <link rel="canonical" href="https://www.xiaotaotao.vip/2019/12/10/centOS安装php/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>centOS7安装php | 学习记录</title>
+  <meta name="generator" content="Hexo 3.9.0">
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">学习记录</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://www.xiaotaotao.vip/2019/12/10/centOS安装php/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘盼">
+      <meta itemprop="description" content="VUE 前端 Laravel">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="学习记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">centOS7安装php
+
+          
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-10 16:17:09" itemprop="dateCreated datePublished" datetime="2019-12-10T16:17:09+08:00">2019-12-10</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-06 16:04:26" itemprop="dateModified" datetime="2020-01-06T16:04:26+08:00">2020-01-06</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/服务器配置问题/" itemprop="url" rel="index"><span itemprop="name">服务器配置问题</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h1><blockquote>
+<p>这里使用源码安装的方式，最好是直接去<a href="https://www.php.net/downloads.php" target="_blank" rel="noopener">官网</a>下载压缩包。选择合适的版本，右键复制链接地址。</p>
+</blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#源码下载文件夹</span></span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/src/</span><br><span class="line"></span><br><span class="line"><span class="comment">#使用wget下载（刚才复制的链接）</span></span><br><span class="line">wget https://www.php.net/distributions/php-7.4.0.tar.xz</span><br><span class="line"></span><br><span class="line"><span class="comment">#解压</span></span><br><span class="line">tar -Jxvf php-7.4.0.tar.xz</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> php-7.4.0</span><br></pre></td></tr></table></figure><a id="more"></a>
+
+
+<h1 id="编译配置"><a href="#编译配置" class="headerlink" title="编译配置"></a>编译配置</h1><blockquote>
+<p>进入解压的文件夹（php-7.4.0）后需要检查编译环境，然后生成<code>Makefile</code>文件。在检查编译环境过程中可能会出现错误，主要是要保证检查后没有<code>error</code>，如果检查后有错误，则不能生成<code>Makefile</code>文件。</p>
+</blockquote>
+<blockquote>
+<p><code>./configure</code>的<code>--prefix=/usr/local/php7.3</code>是确定安装文件夹，<code>--with-config-file-path=/usr/local/php7.3/etc</code>是确定php运行配置文件的文件夹，这两个参数最好都使用，如果没有指定文件夹，最终会按照默认的方式安装，对整体的管理比较麻烦。</p>
+</blockquote>
+<blockquote>
+<p><code>./configure</code>的参数详解自行百度了解。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#配置编译参数，检查编译环境是否符合</span></span><br><span class="line">./configure --prefix=/usr/<span class="built_in">local</span>/php7.3 --with-config-file-path=/usr/<span class="built_in">local</span>/php7.3/lib --with-curl --with-freetype-dir --with-gd --with-gettext --with-iconv-dir --with-kerberos --with-libdir=lib64 --with-libxml-dir --with-openssl --with-pcre-regex --with-pdo-mysql --with-pdo-sqlite --with-pear --with-png-dir --with-xmlrpc --with-xsl --with-zlib --with-mhash --with-jpeg-dir --<span class="built_in">enable</span>-fpm --<span class="built_in">enable</span>-bcmath --<span class="built_in">enable</span>-libxml --<span class="built_in">enable</span>-inline-optimization --<span class="built_in">enable</span>-mbregex --<span class="built_in">enable</span>-mbstring --<span class="built_in">enable</span>-opcache --<span class="built_in">enable</span>-pcntl --<span class="built_in">enable</span>-shmop --<span class="built_in">enable</span>-soap --<span class="built_in">enable</span>-sockets --<span class="built_in">enable</span>-sysvsem --<span class="built_in">enable</span>-xml --<span class="built_in">enable</span>-zip --<span class="built_in">enable</span>-ftp --<span class="built_in">enable</span>-intl --<span class="built_in">enable</span>-mysqlnd --<span class="built_in">disable</span>-rpath --<span class="built_in">disable</span>-fileinfo</span><br></pre></td></tr></table></figure>
+
+<p>一般执行上面代码后都会出现找不到某个包的错误，因为配置参数中设置了php支持的功能需要下载包。主要是有以下几个问题，如果出现了其他问题处理方式类似。总之就是要保证执行完上述命令后不能有错误。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#1、</span></span><br><span class="line"><span class="comment">#报错找不到某个包(会出现多次这种类型的错误，解决方法都一样)</span></span><br><span class="line"><span class="comment">#configure: error: libxml2 not found. Please check your libxml2 installation.</span></span><br><span class="line"></span><br><span class="line">yum install libxml2-devel</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#2、</span></span><br><span class="line"><span class="comment">#有的包版本过低，不能通过yum下载了，需要用源码安装</span></span><br><span class="line"><span class="comment">#checking for libzip... configure: error: system libzip must be upgraded to version &gt;= 0.11</span></span><br><span class="line"></span><br><span class="line">yum remove libzip <span class="comment">#删除旧版本</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/src <span class="comment">#返回到源码下载目录</span></span><br><span class="line"></span><br><span class="line">wget https://libzip.org/download/libzip-1.5.2.tar.xz <span class="comment">#下载新版本</span></span><br><span class="line"></span><br><span class="line">tar -Jxvf libzip-1.5.2 <span class="comment">#解压</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> libzip-1.5.2</span><br><span class="line"></span><br><span class="line">./configure <span class="comment">#检查编译环境（举例的这个包比较特殊，不能用`./configure`命令，具体安装方式查看INSTALL.md文件）</span></span><br><span class="line"></span><br><span class="line">make <span class="comment">#编译</span></span><br><span class="line"></span><br><span class="line">make install <span class="comment">#安装到指定文件夹</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/src/php-7.4.0 <span class="comment">#返回php文件夹继续执行`./configure ....`检查执行环境</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#3、</span></span><br><span class="line"><span class="comment">#off_t undefind报错</span></span><br><span class="line"><span class="comment">#configure: error: off_t undefined; check your library configuration</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加搜索路径到配置文件</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">'/usr/local/lib64</span></span><br><span class="line"><span class="string">/usr/local/lib</span></span><br><span class="line"><span class="string">/usr/lib</span></span><br><span class="line"><span class="string">/usr/lib64'</span>&gt;&gt;/etc/ld.so.conf</span><br><span class="line"></span><br><span class="line">ldconfig -v <span class="comment">#更新配置</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h1><blockquote>
+<p>在确定检查编译没问题，并且生成了<code>Makefile</code>文件，这时候就可以进行编译了。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#编译</span></span><br><span class="line">make</span><br><span class="line"></span><br><span class="line"><span class="comment">#安装到指定文件(具体安装到哪里根据`./configure`的参数确定)</span></span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><blockquote>
+<p>这里只针对<code>./configure</code>设置了<code>--prefix</code>和<code>--with-config-file-path</code>参数的情况进行说明。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入php安装文件夹</span></span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/php7.3</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进入配置文件夹</span></span><br><span class="line"><span class="built_in">cd</span> /etc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用默认配置（具体配置百度）</span></span><br><span class="line">cp php-fpm.conf.default php-fpm.conf</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> php-fpm.d</span><br><span class="line"></span><br><span class="line">cp www.conf.default www.conf</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>环境变量设置（可选）</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对profile文件进行编辑</span></span><br><span class="line">vim /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在profile文件的最后加上</span></span><br><span class="line">exprot PATH=<span class="variable">$PATH</span>=:/usr/<span class="built_in">local</span>/php7.3/bin:/usr/<span class="built_in">local</span>/php7.3/sbin</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重新读取文件</span></span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
+
+<h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 如果配置了环境变量</span></span><br><span class="line">php-fpm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果没有配置环境变量</span></span><br><span class="line">/usr/<span class="built_in">local</span>/php7.3/sbin/php-fpm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看是否启动成功</span></span><br><span class="line">ps aux | grep php-fpm</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/12/02/流媒体播放前端方案/" rel="next" title="流媒体播放前端方案">
+                  <i class="fa fa-chevron-left"></i> 流媒体播放前端方案
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/12/16/php安装拓展/" rel="prev" title="php安装拓展">
+                  php安装拓展 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#下载"><span class="nav-number">1.</span> <span class="nav-text">下载</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译配置"><span class="nav-number">2.</span> <span class="nav-text">编译配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译"><span class="nav-number">3.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置"><span class="nav-number">4.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启动"><span class="nav-number">5.</span> <span class="nav-text">启动</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">刘盼</p>
+  <div class="site-description" itemprop="description">VUE 前端 Laravel</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘盼</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

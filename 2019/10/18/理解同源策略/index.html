@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="何为同源两个页面的协议、域名、端口都相同的情况下，这两个页面就属于同源。     协议一般是http或者http;  域名一般表现为www.baidu.com；  端口在域名后面加上:4000，表示4000端口，如果没有注明端口，则表示默认端口。http默认端口为80，https默认端口为443;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解同源策略">
+<meta property="og:url" content="https://www.xiaotaotao.vip/2019/10/18/理解同源策略/index.html">
+<meta property="og:site_name" content="学习记录">
+<meta property="og:description" content="何为同源两个页面的协议、域名、端口都相同的情况下，这两个页面就属于同源。     协议一般是http或者http;  域名一般表现为www.baidu.com；  端口在域名后面加上:4000，表示4000端口，如果没有注明端口，则表示默认端口。http默认端口为80，https默认端口为443;">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-18T07:56:47.799Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="理解同源策略">
+<meta name="twitter:description" content="何为同源两个页面的协议、域名、端口都相同的情况下，这两个页面就属于同源。     协议一般是http或者http;  域名一般表现为www.baidu.com；  端口在域名后面加上:4000，表示4000端口，如果没有注明端口，则表示默认端口。http默认端口为80，https默认端口为443;">
+  <link rel="canonical" href="https://www.xiaotaotao.vip/2019/10/18/理解同源策略/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>理解同源策略 | 学习记录</title>
+  <meta name="generator" content="Hexo 3.9.0">
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">学习记录</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://www.xiaotaotao.vip/2019/10/18/理解同源策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘盼">
+      <meta itemprop="description" content="VUE 前端 Laravel">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="学习记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">理解同源策略
+
+          
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-18 09:53:35 / 修改时间：15:56:47" itemprop="dateCreated datePublished" datetime="2019-10-18T09:53:35+08:00">2019-10-18</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/http/" itemprop="url" rel="index"><span itemprop="name">http</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="何为同源"><a href="#何为同源" class="headerlink" title="何为同源"></a>何为同源</h1><p>两个页面的协议、域名、端口都相同的情况下，这两个页面就属于同源。    </p><ol>
+<li><p>协议一般是<code>http</code>或者<code>http</code>;</p>
+</li>
+<li><p>域名一般表现为<code>www.baidu.com</code>；</p>
+</li>
+<li><p>端口在域名后面加上<code>:4000</code>，表示4000端口，如果没有注明端口，则表示默认端口。<code>http</code>默认端口为<code>80</code>，<code>https</code>默认端口为<code>443</code>;</p>
+</li>
+</ol><a id="more"></a>
+
+<blockquote>
+<p>举例：现有一个页面连接为：<code>https://www.baidu.com</code>，以下几种情况来区分是否同源。    </p>
+<ol>
+<li><code>http://www.baidu.com</code>，不同源，协议不同，一个是<code>https</code>另一个是<code>http</code>；</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li><p><code>https://www.alibaba.com</code>，不同源，域名不同，一个是<code>www.baidu.com</code>另一个是<br><code>www.alibaba.com</code>；</p>
+</li>
+<li><p><code>https://www.baidu.com:9527</code>，不同源，端口不同，一个是<code>443</code>另一个是<code>9527</code>;</p>
+</li>
+<li><p><code>https://www.baidu.com/s</code>，同源，端口、域名、协议都相同，不同的是路径；</p>
+</li>
+</ol>
+<h1 id="何为同源策略"><a href="#何为同源策略" class="headerlink" title="何为同源策略"></a>何为同源策略</h1><p>以下为个人总结，如有出入望指出。</p>
+<ol>
+<li><p>禁止不同源之间进行DOM操作；</p>
+</li>
+<li><p>禁止不同源之间进行AJAX请求；</p>
+</li>
+<li><p>禁止不同源之间进行读写localStorage和IndexedDB；</p>
+</li>
+</ol>
+<blockquote>
+<p>注意：禁止AJAX实际上是浏览器禁止读取响应内容，而不是禁止请求，注意区分。</p>
+</blockquote>
+<h1 id="为什么使用同源策略"><a href="#为什么使用同源策略" class="headerlink" title="为什么使用同源策略"></a>为什么使用同源策略</h1><p>从大的方面来说肯定是为了用户的信息安全，但是具体如果不使用同源策略会导致什么安全问题呢？分别针对3条规则举例说明：</p>
+<ol>
+<li><p>如果允许跨源操作DOM，假设我有个网站是<code>https://www.xiaotaotao.vip</code>，我在我的网站里面使用<code>iframe</code>嵌入了一个银行的网站，如果你没注意到url的不同直接输入了你的银行密码，那么我就可以操作银行网站的输入框（操作DOM）就可以获取到你的密码了。</p>
+</li>
+<li><p>如果允许跨源进行AJAX请求，假设我在自己的网站<code>https://www.xiaotaotao.vip</code>写一个音乐播放页面，然后所有的歌曲都可以去调用QQ音乐的接口，导致别人的服务直接被我接入。（该策略应该是针对用户信息安全的，但是我个人目前没有发现或者想到因为AJAX跨源访问导致用户信息泄漏的情况，以后了解了再补充）。</p>
+</li>
+<li><p>如果允许跨源对localStorage或者IndexDB进行读写，那么就会导致恶意网站在任何时候都可以去读取你存在loalStorage里面的个人数据。</p>
+</li>
+</ol>
+<h1 id="为什么要跨域"><a href="#为什么要跨域" class="headerlink" title="为什么要跨域"></a>为什么要跨域</h1><p>在前端领域<code>跨域</code>这个词语可谓老生常谈，前面我们知道了同源策略是一个非常好的协议，几乎所有的浏览器都遵守这份协议（IE很调皮，它有点不一样），而且这份同源协议对用户的信息安全也是非常的重要，那我们为什么要经常讨论要去跨域呢？</p>
+<ol>
+<li><p>当前开发处于前后段分离的大环境下，这样开发的优势这里不讨论，但是其中有一个问题几乎每个项目都会遇到的。后端的小伙伴开发好接口部署到服务器，前端的小伙伴开发好页面去调用接口进行测试。前后端的代码都部署在生产环境一般也没问题，问题就在于前端在本地进行开发测试的时候需要调用服务器上的后端接口，<code>本地运行的前端代码</code>和<code>服务器上运行的后端接口</code>必然属于两个不同个的源，所以导致本地处于开发模式的前端代码无法调用服务器上后端的接口。</p>
+</li>
+<li><p>在很多图片的服务中，经常会出现图片等静态资源会单独存放在一个服务器，然后其他的源去这个静态资源服务器请求图片。图片资源跨域访问后再使用<code>canvas</code>处理，最后使用<code>getImageData()或者toDataUrl()</code>方法操作图片，这是就会出现跨域问题。<code>img</code>标签本身是可以跨域的，但是后续对图片处理的方法会导致跨域，此时就需要设置允许图片服务的跨域。</p>
+</li>
+</ol>
+<blockquote>
+<p>跨域应用场景很多，后面补充</p>
+</blockquote>
+<h1 id="如何跨域"><a href="#如何跨域" class="headerlink" title="如何跨域"></a>如何跨域</h1><p>跨域的方式有很多，主要分为几个方面，分别是利用可以跨域的html标签、针对跨域的Api、nginx反向代理。</p>
+<ol>
+<li><p>一般大家说到的<code>JSONP</code>跨域就是利用<code>&lt;script&gt;</code>标签可以跨域的特性进行跨域访问。具体的操作就是前端用js创建一个script标签，然后<code>src</code>属性中写上需要访问的接口路径和参数就可以了，然后后端返回一段js代码，这段代码会自动执行，从而完成整个跨域的过程。（表示没有用过，听着就很麻烦！）</p>
+</li>
+<li><p>还有部分可以越过同源策略的Api，例如document.domin、window.name、window.postMessage();</p>
+<ul>
+<li><p>document.domin只能用在同一协议，同一端口，不同域名的父子域之间,将两个页面的<code>document.domin</code>设置为同一个值后，子域就可以访问父域文档信息。具体操作见<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document/domain" target="_blank" rel="noopener">文档</a>;</p>
+</li>
+<li><p>window.name比较简单，在同一个窗口下，无论该窗口访问了哪些源，只要该窗口没有被关闭，则每个页面的<code>window.name</code>都是相通的。可以利用此特性在不同源之间进行简单的传值；</p>
+</li>
+<li><p>window.postMessage()方法需要在页面中指定你需要发送<code>什么信息</code>到<code>哪个源</code>,然后去目的源就可以就可以获取数据了。具体的使用方法见<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage" target="_blank" rel="noopener">文档</a></p>
+</li>
+</ul>
+</li>
+<li><p>前面说的这些跨域方法用起来都不太爽，JSONP只能用于GET请求，使用Api跨域要么只能传递字符串，要么只能传递简单的结构，而且还要受到数据大小的限制，所以在开发中最爽的跨域方法还是使用nginx反响代理。主要的实现原理就是利用服务器去目的源获取数据，然后把数据返回给前端，前端和目的源之间就没有直接联系了，也就不存在跨域问题了。</p>
+</li>
+</ol>
+<blockquote>
+<p>参考资料<br><a href="https://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" target="_blank" rel="noopener">https://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html</a><br><a href="https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy" target="_blank" rel="noopener">https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy</a><br><a href="https://juejin.im/post/5ba1d4fe6fb9a05ce873d4ad#heading-18" target="_blank" rel="noopener">https://juejin.im/post/5ba1d4fe6fb9a05ce873d4ad#heading-18</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/19/VUE生成二维码并下载/" rel="next" title="VUE生成二维码并下载">
+                  <i class="fa fa-chevron-left"></i> VUE生成二维码并下载
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/10/25/浏览器并发限制/" rel="prev" title="浏览器并发限制">
+                  浏览器并发限制 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#何为同源"><span class="nav-number">1.</span> <span class="nav-text">何为同源</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#何为同源策略"><span class="nav-number">2.</span> <span class="nav-text">何为同源策略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么使用同源策略"><span class="nav-number">3.</span> <span class="nav-text">为什么使用同源策略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要跨域"><span class="nav-number">4.</span> <span class="nav-text">为什么要跨域</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何跨域"><span class="nav-number">5.</span> <span class="nav-text">如何跨域</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">刘盼</p>
+  <div class="site-description" itemprop="description">VUE 前端 Laravel</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘盼</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="前言在知道php-fpm是什么之前，需要先知道nginx、cgi、fastcgi这三个东西。首先要知道的一点，nginx只是分发功能，它不能处理动态资源。如果客户端请求静态资源（html、图片等）nginx会直接将静态文件返回。如果是类似API接口这种需要后端php程序处理的请求，nginx不能执行程序，所以它必须将这个请求交给php的解释器，php解释器执行完后，返回给nginx，再由nginx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="php-fpm是什么？">
+<meta property="og:url" content="https://www.xiaotaotao.vip/2019/12/18/php-fpm是什么？/index.html">
+<meta property="og:site_name" content="学习记录">
+<meta property="og:description" content="前言在知道php-fpm是什么之前，需要先知道nginx、cgi、fastcgi这三个东西。首先要知道的一点，nginx只是分发功能，它不能处理动态资源。如果客户端请求静态资源（html、图片等）nginx会直接将静态文件返回。如果是类似API接口这种需要后端php程序处理的请求，nginx不能执行程序，所以它必须将这个请求交给php的解释器，php解释器执行完后，返回给nginx，再由nginx">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.xiaotaotao.vip/2019/12/18/php-fpm是什么？/php-fpm工作流程.png">
+<meta property="og:updated_time" content="2020-01-06T08:04:26.209Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="php-fpm是什么？">
+<meta name="twitter:description" content="前言在知道php-fpm是什么之前，需要先知道nginx、cgi、fastcgi这三个东西。首先要知道的一点，nginx只是分发功能，它不能处理动态资源。如果客户端请求静态资源（html、图片等）nginx会直接将静态文件返回。如果是类似API接口这种需要后端php程序处理的请求，nginx不能执行程序，所以它必须将这个请求交给php的解释器，php解释器执行完后，返回给nginx，再由nginx">
+<meta name="twitter:image" content="https://www.xiaotaotao.vip/2019/12/18/php-fpm是什么？/php-fpm工作流程.png">
+  <link rel="canonical" href="https://www.xiaotaotao.vip/2019/12/18/php-fpm是什么？/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>php-fpm是什么？ | 学习记录</title>
+  <meta name="generator" content="Hexo 3.9.0">
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">学习记录</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://www.xiaotaotao.vip/2019/12/18/php-fpm是什么？/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘盼">
+      <meta itemprop="description" content="VUE 前端 Laravel">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="学习记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">php-fpm是什么？
+
+          
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-18 10:39:37" itemprop="dateCreated datePublished" datetime="2019-12-18T10:39:37+08:00">2019-12-18</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-06 16:04:26" itemprop="dateModified" datetime="2020-01-06T16:04:26+08:00">2020-01-06</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在知道php-fpm是什么之前，需要先知道nginx、cgi、fastcgi这三个东西。</p><p>首先要知道的一点，nginx只是分发功能，它不能处理动态资源。如果客户端请求静态资源（html、图片等）nginx会直接将静态文件返回。如果是类似API接口这种需要后端php程序处理的请求，nginx不能执行程序，所以它必须将这个请求交给php的解释器，php解释器执行完后，返回给nginx，再由nginx返回给客户端。</p><a id="more"></a>
+
+<h1 id="cgi、fastcgi"><a href="#cgi、fastcgi" class="headerlink" title="cgi、fastcgi"></a>cgi、fastcgi</h1><p>cgi：通用网关接口</p>
+<p>直接去维基百科或者百度百科，看得一愣一愣的，啥玩意儿。于是乎我只能按照我看到的资料进行归纳总结便于自己理解。</p>
+<p>cig我理解为一种通信协议（类似http这种）。它是用于谁和谁之间通信的呢？通过上面的前言可以知道，nginx需要把动态接口转发给php解释器执行，那这个cig就是用于nginx和服务端程序之间通信的协议（不限于php程序，只要符合协议要求，并实现了协议程序，就可以通信）。</p>
+<p>cgi具体如何规定的或者如何实现的，这个就不深入了，只要知道它是用来规定通信的一种协议就够了。既然有了cig为什么还有fastcgi呢？肯定是因为cgi有缺陷嘛。</p>
+<p>cig最大的问题是每次一个动态的请求进来，它都会开启一个新的进程去处理，结束后再关闭，对于资源的消耗非常大，遇上高并发就GG了。</p>
+<p>fastcgi的提出就是针对cgi这些缺点的，它会先开启一个master进程加载好php配置，然后再开启worker子进程，这些worker进程才是用来处理动态请求的。worker的数量会随着请求数量的变化而改变，而且由于master进程的常驻内存，不需要每次都去启动全新的进程，从而提高了并发能力。</p>
+<p>cgi基本上已经是过去式了，现在大部分的公司都是使用的fastcgi这种协议。</p>
+<h1 id="php-fpm"><a href="#php-fpm" class="headerlink" title="php-fpm"></a>php-fpm</h1><p>从前面的内容可以知道php程序需要通过fastcig协议和nginx这类服务器软件通信。php-fpm就是实现这个协议的程序，可以理解为http协议和浏览器的关系。</p>
+<p>php-fpm接收到来自nginx的请求后去执行相应的php程序，然后把结果以fastcgi协议的格式返回给nginx，再由nginx返回给客户端。</p>
+<p>除了需要实现fastcgi协议外，php-fpm还有进程管理功能，所谓的进程池。根据php-fpm默认的配置，一般会启动一个master进程，然后启动两个worker进程等待请求进来，worker不够用时增加worker数量。可以通过修改php-fpm的配置文件修改默认开启的worker数量，一般一个worker消耗大约20m内存，生产环境下可以尽量开多一些，减少因为创建进程导致的消耗。</p>
+<h1 id="处理请求流程图"><a href="#处理请求流程图" class="headerlink" title="处理请求流程图"></a>处理请求流程图</h1><img src="/2019/12/18/php-fpm是什么？/php-fpm工作流程.png">
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/12/17/centOS7安装mysql5-7/" rel="next" title="centOS7安装mysql5.7">
+                  <i class="fa fa-chevron-left"></i> centOS7安装mysql5.7
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#cgi、fastcgi"><span class="nav-number">2.</span> <span class="nav-text">cgi、fastcgi</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#php-fpm"><span class="nav-number">3.</span> <span class="nav-text">php-fpm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理请求流程图"><span class="nav-number">4.</span> <span class="nav-text">处理请求流程图</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">刘盼</p>
+  <div class="site-description" itemprop="description">VUE 前端 Laravel</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘盼</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

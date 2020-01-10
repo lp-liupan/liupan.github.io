@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="前言当前应用比较多的流媒体协议主要是RTMP、HTTP-FLV、HLS这三种，具体每种协议有什么特点在另一篇学习记录中。正是因为使用协议的不同，传输的数据格式不同，所以在前端进行播流的时候会有不同的解决方案。对不同的需求，使用的解决方案难易也不相同。下面主要是针对上面三种流媒体协议的一些解决方案。video.js">
+<meta property="og:type" content="article">
+<meta property="og:title" content="流媒体播放前端方案">
+<meta property="og:url" content="https://www.xiaotaotao.vip/2019/12/02/流媒体播放前端方案/index.html">
+<meta property="og:site_name" content="学习记录">
+<meta property="og:description" content="前言当前应用比较多的流媒体协议主要是RTMP、HTTP-FLV、HLS这三种，具体每种协议有什么特点在另一篇学习记录中。正是因为使用协议的不同，传输的数据格式不同，所以在前端进行播流的时候会有不同的解决方案。对不同的需求，使用的解决方案难易也不相同。下面主要是针对上面三种流媒体协议的一些解决方案。video.js">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-01-06T08:04:26.216Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="流媒体播放前端方案">
+<meta name="twitter:description" content="前言当前应用比较多的流媒体协议主要是RTMP、HTTP-FLV、HLS这三种，具体每种协议有什么特点在另一篇学习记录中。正是因为使用协议的不同，传输的数据格式不同，所以在前端进行播流的时候会有不同的解决方案。对不同的需求，使用的解决方案难易也不相同。下面主要是针对上面三种流媒体协议的一些解决方案。video.js">
+  <link rel="canonical" href="https://www.xiaotaotao.vip/2019/12/02/流媒体播放前端方案/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>流媒体播放前端方案 | 学习记录</title>
+  <meta name="generator" content="Hexo 3.9.0">
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">学习记录</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://www.xiaotaotao.vip/2019/12/02/流媒体播放前端方案/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘盼">
+      <meta itemprop="description" content="VUE 前端 Laravel">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="学习记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">流媒体播放前端方案
+
+          
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-02 16:10:31" itemprop="dateCreated datePublished" datetime="2019-12-02T16:10:31+08:00">2019-12-02</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-06 16:04:26" itemprop="dateModified" datetime="2020-01-06T16:04:26+08:00">2020-01-06</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>当前应用比较多的流媒体协议主要是RTMP、HTTP-FLV、HLS这三种，具体每种协议有什么特点在另一篇<a href="https://www.xiaotaotao.vip/2019/11/28/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE%E7%9A%84%E8%AE%A4%E8%AF%86/">学习记录中</a>。正是因为使用协议的不同，传输的数据格式不同，所以在前端进行播流的时候会有不同的解决方案。对不同的需求，使用的解决方案难易也不相同。下面主要是针对上面三种流媒体协议的一些解决方案。</p><h1 id="video-js"><a href="#video-js" class="headerlink" title="video.js"></a>video.js</h1><a id="more"></a>
+<p>video.js是现在比较完善的一个播放器了，他可以兼容RTMP、HTTP-FLV、HLS三种流。但是实现播流使用的技术不完全相同。其中HLS的流会被放在video标签中播放，RTMP、HTTP-FLV的流则只能使用flash插件进行播放。该播放器功能比较强大，具体的使用可以参考<a href="https://docs.videojs.com/" target="_blank" rel="noopener">官方文档</a>。因为有针对vue项目的<a href="https://github.com/surmon-china/vue-video-player" target="_blank" rel="noopener">单独封装</a>，所以这里给出了video.js在vue项目中的初级使用方法。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">videoPlayer</span> </span></span><br><span class="line"><span class="tag">        <span class="attr">class</span>=<span class="string">"video-player-box"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">ref</span>=<span class="string">"videoPlayer"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">:options</span>=<span class="string">"playerOptions"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">:playsinline</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">        &gt;</span><span class="tag">&lt;/<span class="name">videoPlayer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript"><span class="comment">/* 最好以下面这种方式引入，如果按照文档中的方式引入会有bug */</span></span></span><br><span class="line"></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> &#123; videoPlayer &#125; <span class="keyword">from</span> <span class="string">'vue-video-player'</span>;</span></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> <span class="string">'videojs-contrib-hls'</span> <span class="comment">//播放hls协议流记得引入(video.js中有，直接引入即可)</span></span></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> <span class="string">'videojs-flash'</span>		<span class="comment">//需要使用flash插件播放的时候引入（需要npm下载）</span></span></span><br><span class="line"><span class="javascript"><span class="built_in">require</span>(<span class="string">'video.js/dist/video-js.css'</span>)</span></span><br><span class="line"><span class="javascript"><span class="built_in">require</span>(<span class="string">'vue-video-player/src/custom-theme.css'</span>)</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line">    data()&#123;</span><br><span class="line"><span class="actionscript">        <span class="keyword">return</span>&#123;</span></span><br><span class="line">			playerOptions:&#123;</span><br><span class="line"><span class="actionscript">			  	playbackRates: [<span class="number">0.7</span>, <span class="number">1.0</span>, <span class="number">1.5</span>, <span class="number">2.0</span>], <span class="comment">//播放速度</span></span></span><br><span class="line"><span class="actionscript">				autoplay: <span class="literal">false</span>, <span class="comment">//如果true,浏览器准备好时开始回放。</span></span></span><br><span class="line"><span class="actionscript">				muted: <span class="literal">false</span>, <span class="comment">// 默认情况下将会消除任何音频。</span></span></span><br><span class="line"><span class="actionscript">				loop: <span class="literal">false</span>, <span class="comment">// 导致视频一结束就重新开始。</span></span></span><br><span class="line"><span class="actionscript">				preload: <span class="string">'auto'</span>, <span class="comment">// 建议浏览器在&lt;video&gt;加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）</span></span></span><br><span class="line"><span class="actionscript">				language: <span class="string">'zh-CN'</span>,</span></span><br><span class="line"><span class="actionscript">				aspectRatio: <span class="string">'16:9'</span>, <span class="comment">// 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）</span></span></span><br><span class="line"><span class="actionscript">				fluid: <span class="literal">false</span>, <span class="comment">// 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。</span></span></span><br><span class="line">				sources: [&#123;</span><br><span class="line"><span class="actionscript">					type: <span class="string">"rtmp/flv"</span>,</span></span><br><span class="line"><span class="actionscript">					src:<span class="string">'http://xxxxxxxx:18080/app/stream.flv?token=60ba75a736762ce8c946fb65fd0e8b59_16ec5c56b75'</span></span></span><br><span class="line">				&#125;],</span><br><span class="line"><span class="actionscript">				techOrder:[<span class="string">'flash'</span>],  <span class="comment">//该数组决定了使用播放器的顺序这里表示只使用flash，也可以使用['html','flash']先使用video标签</span></span></span><br><span class="line"><span class="actionscript">				poster: <span class="string">""</span>, <span class="comment">//你的封面地址</span></span></span><br><span class="line"><span class="actionscript">				notSupportedMessage: <span class="string">'此视频暂无法播放，请稍后再试'</span>, <span class="comment">//允许覆盖Video.js无法播放媒体源时显示的默认信息。</span></span></span><br><span class="line">				controlBar: &#123;</span><br><span class="line"><span class="actionscript">					timeDivider: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">					durationDisplay: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">					remainingTimeDisplay: <span class="literal">false</span>,</span></span><br><span class="line"><span class="actionscript">					fullscreenToggle: <span class="literal">true</span> <span class="comment">//全屏按钮</span></span></span><br><span class="line">				&#125;,					</span><br><span class="line">		  &#125;,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    components:&#123;</span><br><span class="line">        videoPlayer</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="flv-js"><a href="#flv-js" class="headerlink" title="flv.js"></a>flv.js</h1><p>该协议是bilibili公司的开源协议，因为video标签不支持flv格式的视频，所以HTTP-FLV的流只能使用flash插件播放。flv.js就是解决HTTP-FLV的流不能在video标签播放的库。主要原理是通过将flv格式转码为mp4格式后，再使用video播放。因为该js库的开源才使得大家可以既使用延迟非常低的HTTP-FLV协议，又可以使用video标签进行自定义交互(flv.js在移动端不兼容，所以在移动端浏览器无法使用)。以下是在vue项目中简单使用flv.js的方法，关于部分使用中的坑，可以参考<a href="https://www.xiaotaotao.vip/2019/11/13/VUE%E4%B8%AD%E4%BD%BF%E7%94%A8flvjs%E8%B8%A9%E5%9D%91/">这里</a>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">video</span> <span class="attr">id</span>=<span class="string">"videoElement"</span> <span class="attr">controls</span> <span class="attr">autoplay</span> <span class="attr">muted</span> <span class="attr">width</span>=<span class="string">"600"</span> <span class="attr">height</span>=<span class="string">"450"</span>&gt;</span><span class="tag">&lt;/<span class="name">video</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> flvjs <span class="keyword">from</span> <span class="string">'flv.js'</span></span></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line">  mounted()&#123;</span><br><span class="line"><span class="actionscript">	<span class="keyword">if</span> (flvjs.isSupported()) &#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">let</span> videoElement = <span class="built_in">document</span>.getElementById(<span class="string">'videoElement'</span>);</span></span><br><span class="line"><span class="javascript">        <span class="keyword">let</span> flvPlayer = flvjs.createPlayer(&#123;</span></span><br><span class="line"><span class="actionscript">			type: <span class="string">'flv'</span>,</span></span><br><span class="line"><span class="actionscript">			isLive: <span class="literal">true</span>,   <span class="comment">//直播流</span></span></span><br><span class="line"><span class="actionscript">			hasAudio: <span class="literal">false</span>,</span></span><br><span class="line"><span class="actionscript">			url:<span class="string">'http://xxxxxx/6538-1.1567494734966.flv'</span></span></span><br><span class="line">		&#125;);</span><br><span class="line"><span class="javascript">		<span class="built_in">console</span>.log(flvPlayer,<span class="string">'flv对象'</span>)</span></span><br><span class="line">        flvPlayer.attachMediaElement(videoElement);</span><br><span class="line">        flvPlayer.load();</span><br><span class="line">        flvPlayer.play();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="aliplayer"><a href="#aliplayer" class="headerlink" title="aliplayer"></a>aliplayer</h1><p>阿里巴巴的视频播放器，可以兼容RTMP、HTTP-FLV、HLS三种协议流，其中可以使用video标签播放HLS和HTTP-FLV（点播可以，直播暂时没有调试好，理论上是可以的，调试好后补充），RTMP协议的流也只能使用flash插件播放。有大公司背景做支撑，应该不用担心该库的维护问题，而且兼容也做的比价好，使用熟练后应该是一个比较完善的解决方案。以下是在vue项目中基础的使用方法，关于该库的使用细节待深入学习了解后再记录。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">'prism-player'</span> <span class="attr">:id</span>=<span class="string">'playerId'</span> <span class="attr">:style</span>=<span class="string">'playStyle'</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line"><span class="actionscript">        name: <span class="string">'Aliplayer'</span>,</span></span><br><span class="line">        props: &#123;</span><br><span class="line">            playStyle: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">''</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            aliplayerSdkPath: &#123;</span><br><span class="line"><span class="actionscript">                <span class="comment">// Aliplayer 代码的路径</span></span></span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">'https://g.alicdn.com/de/prismplayer/2.8.1/aliplayer-min.js'</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            autoplay: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">Boolean</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="literal">false</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            isLive: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">Boolean</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="literal">false</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            playsinline: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">Boolean</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="literal">false</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            width: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">'100%'</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            height: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">'320px'</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            controlBarVisibility: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">'always'</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            useH5Prism: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">Boolean</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="literal">false</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            useFlashPrism: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">Boolean</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="literal">false</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            vid: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">''</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            playauth: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">''</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            source: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">''</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            cover: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">''</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            format: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">'m3u8'</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            x5_video_position: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">'top'</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            x5_type: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="string">'h5'</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            x5_fullscreen: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">Boolean</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="literal">false</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            x5_orientation: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">Number</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="number">2</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            autoPlayDelay: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">Number</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">default</span>: <span class="number">0</span></span></span><br><span class="line">            &#125;,</span><br><span class="line">            autoPlayDelayDisplayText: &#123;</span><br><span class="line"><span class="javascript">                type: <span class="built_in">String</span></span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        data () &#123;</span><br><span class="line"><span class="actionscript">            <span class="keyword">return</span> &#123;</span></span><br><span class="line"><span class="javascript">                playerId: <span class="string">'aliplayer_'</span> + <span class="built_in">Math</span>.random() * <span class="number">100000000000000000</span>,</span></span><br><span class="line">                scriptTagStatus: 0,</span><br><span class="line"><span class="actionscript">                instance: <span class="literal">null</span></span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        created () &#123;</span><br><span class="line"><span class="javascript">            <span class="keyword">if</span> (<span class="built_in">window</span>.Aliplayer !== <span class="literal">undefined</span>) &#123;</span></span><br><span class="line"><span class="actionscript">                <span class="comment">// 如果全局对象存在，说明编辑器代码已经初始化完成，直接加载编辑器</span></span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.scriptTagStatus = <span class="number">2</span>;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.initAliplayer()</span></span><br><span class="line"><span class="actionscript">            &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="actionscript">                <span class="comment">// 如果全局对象不存在，说明编辑器代码还没有加载完成，需要加载编辑器代码</span></span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.insertScriptTag()</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        mounted () &#123;</span><br><span class="line"><span class="javascript">            <span class="keyword">if</span> (<span class="built_in">window</span>.Aliplayer !== <span class="literal">undefined</span>) &#123;</span></span><br><span class="line"><span class="actionscript">                <span class="comment">// 如果全局对象存在，说明编辑器代码已经初始化完成，直接加载编辑器</span></span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.scriptTagStatus = <span class="number">2</span>;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.initAliplayer()</span></span><br><span class="line"><span class="actionscript">            &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="actionscript">                <span class="comment">// 如果全局对象不存在，说明编辑器代码还没有加载完成，需要加载编辑器代码</span></span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.insertScriptTag()</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        methods: &#123;</span><br><span class="line">            insertScriptTag () &#123;</span><br><span class="line"><span class="actionscript">                <span class="keyword">const</span> _this = <span class="keyword">this</span>;</span></span><br><span class="line"><span class="javascript">                <span class="keyword">let</span> playerScriptTag = <span class="built_in">document</span>.getElementById(<span class="string">'playerScriptTag'</span>);</span></span><br><span class="line"><span class="actionscript">                <span class="comment">// 如果这个tag不存在，则生成相关代码tag以加载代码</span></span></span><br><span class="line"><span class="actionscript">                <span class="keyword">if</span> (playerScriptTag === <span class="literal">null</span>) &#123;</span></span><br><span class="line"><span class="javascript">                    playerScriptTag = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span></span><br><span class="line"><span class="actionscript">                    playerScriptTag.type = <span class="string">'text/javascript'</span>;</span></span><br><span class="line"><span class="actionscript">                    playerScriptTag.src = <span class="keyword">this</span>.aliplayerSdkPath;</span></span><br><span class="line"><span class="actionscript">                    playerScriptTag.id = <span class="string">'playerScriptTag'</span>;</span></span><br><span class="line"><span class="javascript">                    <span class="keyword">let</span> s = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>];</span></span><br><span class="line">                    s.appendChild(playerScriptTag)</span><br><span class="line">                &#125;</span><br><span class="line"><span class="actionscript">                <span class="keyword">if</span> (playerScriptTag.loaded) &#123;</span></span><br><span class="line">                    _this.scriptTagStatus++</span><br><span class="line"><span class="actionscript">                &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="actionscript">                    playerScriptTag.addEventListener(<span class="string">'load'</span>, () =&gt; &#123;</span></span><br><span class="line">                        _this.scriptTagStatus++;</span><br><span class="line"><span class="actionscript">                        playerScriptTag.loaded = <span class="literal">true</span>;</span></span><br><span class="line">                        _this.initAliplayer()</span><br><span class="line">                    &#125;)</span><br><span class="line">                &#125;</span><br><span class="line">                _this.initAliplayer()</span><br><span class="line">            &#125;,</span><br><span class="line">            initAliplayer () &#123;</span><br><span class="line"><span class="actionscript">                <span class="keyword">const</span> _this = <span class="keyword">this</span>;</span></span><br><span class="line"><span class="actionscript">                <span class="comment">// scriptTagStatus 为 2 的时候，说明两个必需引入的 js 文件都已经被引入，且加载完成</span></span></span><br><span class="line"><span class="actionscript">                <span class="keyword">if</span> (_this.scriptTagStatus === <span class="number">2</span> &amp;&amp; _this.instance === <span class="literal">null</span>) &#123;</span></span><br><span class="line"><span class="actionscript">                    <span class="comment">// Vue 异步执行 DOM 更新，这样一来代码执行到这里的时候可能 template 里面的 script 标签还没真正创建</span></span></span><br><span class="line"><span class="actionscript">                    <span class="comment">// 所以，我们只能在 nextTick 里面初始化 Aliplayer</span></span></span><br><span class="line"><span class="javascript">                    _this.$nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">                        _this.instance = <span class="built_in">window</span>.Aliplayer(&#123;</span></span><br><span class="line">                            id: _this.playerId,</span><br><span class="line">                            autoplay: _this.autoplay,</span><br><span class="line">                            isLive: _this.isLive,</span><br><span class="line">                            playsinline: _this.playsinline,</span><br><span class="line">                            format: _this.format,</span><br><span class="line">                            width: _this.width,</span><br><span class="line">                            height: _this.height,</span><br><span class="line">                            controlBarVisibility: _this.controlBarVisibility,</span><br><span class="line">                            useH5Prism: _this.useH5Prism,</span><br><span class="line">                            useFlashPrism: _this.useFlashPrism,</span><br><span class="line">                            vid: _this.vid,</span><br><span class="line">                            playauth: _this.playauth,</span><br><span class="line">                            source: _this.source,</span><br><span class="line">                            cover: _this.cover,</span><br><span class="line">                            x5_video_position: _this.x5_video_position,</span><br><span class="line">                            x5_type: _this.x5_type,</span><br><span class="line">                            x5_fullscreen: _this.x5_fullscreen,</span><br><span class="line">                            x5_orientation: _this.x5_orientation,</span><br><span class="line">                            autoPlayDelay: _this.autoPlayDelay,</span><br><span class="line">							autoPlayDelayDisplayText: _this.autoPlayDelayDisplayText,</span><br><span class="line"></span><br><span class="line"><span class="actionscript">							enableStashBufferForFlv:<span class="literal">true</span>,</span></span><br><span class="line"></span><br><span class="line">                        &#125;);</span><br><span class="line"><span class="actionscript">                        <span class="comment">// 绑定事件，当 AliPlayer 初始化完成后，将编辑器实例通过自定义的 ready 事件交出去</span></span></span><br><span class="line"><span class="actionscript">                        _this.instance.on(<span class="string">'ready'</span>, () =&gt; &#123;</span></span><br><span class="line"><span class="actionscript">                            <span class="keyword">this</span>.$emit(<span class="string">'ready'</span>, _this.instance)</span></span><br><span class="line">                        &#125;);</span><br><span class="line"><span class="actionscript">                        _this.instance.on(<span class="string">'play'</span>, () =&gt; &#123;</span></span><br><span class="line"><span class="actionscript">                            <span class="keyword">this</span>.$emit(<span class="string">'play'</span>, _this.instance)</span></span><br><span class="line">                        &#125;);</span><br><span class="line"><span class="actionscript">                        _this.instance.on(<span class="string">'pause'</span>, () =&gt; &#123;</span></span><br><span class="line"><span class="actionscript">                            <span class="keyword">this</span>.$emit(<span class="string">'pause'</span>, _this.instance)</span></span><br><span class="line">                        &#125;);</span><br><span class="line"><span class="actionscript">                        _this.instance.on(<span class="string">'ended'</span>, () =&gt; &#123;</span></span><br><span class="line"><span class="actionscript">                            <span class="keyword">this</span>.$emit(<span class="string">'ended'</span>, _this.instance)</span></span><br><span class="line">                        &#125;);</span><br><span class="line"><span class="actionscript">                        _this.instance.on(<span class="string">'liveStreamStop'</span>, () =&gt; &#123;</span></span><br><span class="line"><span class="actionscript">                            <span class="keyword">this</span>.$emit(<span class="string">'liveStreamStop'</span>, _this.instance)</span></span><br><span class="line">                        &#125;);</span><br><span class="line"><span class="actionscript">                        _this.instance.on(<span class="string">'m3u8Retry'</span>, () =&gt; &#123;</span></span><br><span class="line"><span class="actionscript">                            <span class="keyword">this</span>.$emit(<span class="string">'m3u8Retry'</span>, _this.instance)</span></span><br><span class="line">                        &#125;);</span><br><span class="line"><span class="actionscript">                        _this.instance.on(<span class="string">'hideBar'</span>, () =&gt; &#123;</span></span><br><span class="line"><span class="actionscript">                            <span class="keyword">this</span>.$emit(<span class="string">'hideBar'</span>, _this.instance)</span></span><br><span class="line">                        &#125;);</span><br><span class="line"><span class="actionscript">                        _this.instance.on(<span class="string">'waiting'</span>, () =&gt; &#123;</span></span><br><span class="line"><span class="actionscript">                            <span class="keyword">this</span>.$emit(<span class="string">'waiting'</span>, _this.instance)</span></span><br><span class="line">                        &#125;);</span><br><span class="line"><span class="actionscript">                        _this.instance.on(<span class="string">'snapshoted'</span>, () =&gt; &#123;</span></span><br><span class="line"><span class="actionscript">                            <span class="keyword">this</span>.$emit(<span class="string">'snapshoted'</span>, _this.instance)</span></span><br><span class="line">                        &#125;)</span><br><span class="line">                    &#125;)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             * 播放视频</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            play: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.instance.play()</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             * 暂停视频</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            pause: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.instance.pause()</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             * 重播视频</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            replay: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.instance.replay()</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             * 跳转到某个时刻进行播放</span><br><span class="line">             * @argument time 的单位为秒</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            seek: <span class="function"><span class="keyword">function</span> <span class="params">(time)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.instance.seek(time)</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             * 获取当前时间 单位秒</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            getCurrentTime: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">return</span> <span class="keyword">this</span>.instance.getCurrentTime()</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             *获取视频总时长，返回的单位为秒</span><br><span class="line">             * @returns 返回的单位为秒</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            getDuration: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">return</span> <span class="keyword">this</span>.instance.getDuration()</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             获取当前的音量，返回值为0-1的实数ios和部分android会失效</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            getVolume: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">return</span> <span class="keyword">this</span>.instance.getVolume()</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             设置音量，vol为0-1的实数，ios和部分android会失效</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            setVolume: <span class="function"><span class="keyword">function</span> <span class="params">(vol)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.instance.setVolume(vol)</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             *直接播放视频url，time为可选值（单位秒）目前只支持同种格式（mp4/flv/m3u8）之间切换暂不支持直播rtmp流切换</span><br><span class="line">             *@argument url 视频地址</span><br><span class="line">             *@argument time 跳转到多少秒</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            loadByUrl: <span class="function"><span class="keyword">function</span> <span class="params">(url, time)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.instance.loadByUrl(url, time)</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             * 设置播放速度</span><br><span class="line">             *@argument speed 速度</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            setSpeed: <span class="function"><span class="keyword">function</span> <span class="params">(speed)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.instance.setSpeed(speed)</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             * 设置播放器大小w,h可分别为400px像素或60%百分比chrome浏览器下flash播放器分别不能小于397x297</span><br><span class="line">             *@argument w 播放器宽度</span><br><span class="line">             *@argument h 播放器高度</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            setPlayerSize: <span class="function"><span class="keyword">function</span> <span class="params">(w, h)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.instance.setPlayerSize(w, h)</span></span><br><span class="line">            &#125;,</span><br><span class="line">            /**</span><br><span class="line">             * 目前只支持HTML5界面上的重载功能,暂不支持直播rtmp流切换m3u8）之间切换,暂不支持直播rtmp流切换</span><br><span class="line">             *@argument vid 视频id</span><br><span class="line">             *@argument playauth 播放凭证</span><br><span class="line">             */</span><br><span class="line"><span class="actionscript">            reloaduserPlayInfoAndVidRequestMts: <span class="function"><span class="keyword">function</span> <span class="params">(vid, playauth)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="keyword">this</span>.instance.reloaduserPlayInfoAndVidRequestMts(vid, playauth)</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="css">    @<span class="keyword">import</span> url(//g.alicdn.com/de/prismplayer/<span class="number">2.8</span>.<span class="number">0</span>/skins/default/aliplayer-min.css);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="video标签"><a href="#video标签" class="headerlink" title="video标签"></a>video标签</h1><p>HLS流在部分浏览器中可以直接使用video标签播放，这种情况是最好的。既保证了代码的精简，使用起来也非常的简单，直接把留地址放video标签就可以了。但是因为各家浏览器对video标签可播放的协议流兼容不同，所以基本上在web端没办法直接使用video标签，除了Safari，苹果家的浏览器可以直接播放HLS的流，毕竟他们是一家的嘛。除去web端浏览器外，video标签在移动端浏览器对HLS流的兼容性出奇的好，几乎所有的移动端浏览器都支持。也就是说如果有的播放需求只需要在移动端并且使用的是HLS的流，那么就可以直接使用video标签播放了。</p>
+<blockquote>
+<p>使用比较简单，这里就不做示范了。</p>
+</blockquote>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><blockquote>
+<p>各种播放器对不同流媒体协议的支持情况</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">流媒体协议</th>
+<th align="center">video.js</th>
+<th align="center">flv.js</th>
+<th align="center">aliplayer</th>
+<th align="center">video</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">RTMP</td>
+<td align="center">true（flash）</td>
+<td align="center">false</td>
+<td align="center">true（flash）</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">HTTP-FLV</td>
+<td align="center">true（flash）</td>
+<td align="center">true</td>
+<td align="center">true</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">HLS</td>
+<td align="center">true</td>
+<td align="center">false</td>
+<td align="center">true</td>
+<td align="center">true</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>各种播放器兼容情况（待完善）</p>
+</blockquote>
+<p>。。。。。。</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/28/流媒体协议的认识/" rel="next" title="流媒体协议的认识">
+                  <i class="fa fa-chevron-left"></i> 流媒体协议的认识
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/12/10/centOS安装php/" rel="prev" title="centOS7安装php">
+                  centOS7安装php <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#video-js"><span class="nav-number">2.</span> <span class="nav-text">video.js</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#flv-js"><span class="nav-number">3.</span> <span class="nav-text">flv.js</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#aliplayer"><span class="nav-number">4.</span> <span class="nav-text">aliplayer</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#video标签"><span class="nav-number">5.</span> <span class="nav-text">video标签</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">刘盼</p>
+  <div class="site-description" itemprop="description">VUE 前端 Laravel</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘盼</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

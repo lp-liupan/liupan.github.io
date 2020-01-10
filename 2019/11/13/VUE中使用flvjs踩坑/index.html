@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="在vue项目中使用flvjs安装1npm install flv.js组件内引入1import flvjs from &apos;flv.js&apos;使用： 创建一个id为videoElement的video标签； 在生命周期mounted中使用flvjs，具体使用范例如下； 123456789101112131415161718192021222324252627282930313233343536&amp;lt;te">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VUE中使用flvjs踩坑">
+<meta property="og:url" content="https://www.xiaotaotao.vip/2019/11/13/VUE中使用flvjs踩坑/index.html">
+<meta property="og:site_name" content="学习记录">
+<meta property="og:description" content="在vue项目中使用flvjs安装1npm install flv.js组件内引入1import flvjs from &apos;flv.js&apos;使用： 创建一个id为videoElement的video标签； 在生命周期mounted中使用flvjs，具体使用范例如下； 123456789101112131415161718192021222324252627282930313233343536&amp;lt;te">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.xiaotaotao.vip/2019/11/13/VUE中使用flvjs踩坑/视频加载.png">
+<meta property="og:image" content="https://www.xiaotaotao.vip/2019/11/13/VUE中使用flvjs踩坑/静音报错.png">
+<meta property="og:updated_time" content="2020-01-06T08:04:26.204Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VUE中使用flvjs踩坑">
+<meta name="twitter:description" content="在vue项目中使用flvjs安装1npm install flv.js组件内引入1import flvjs from &apos;flv.js&apos;使用： 创建一个id为videoElement的video标签； 在生命周期mounted中使用flvjs，具体使用范例如下； 123456789101112131415161718192021222324252627282930313233343536&amp;lt;te">
+<meta name="twitter:image" content="https://www.xiaotaotao.vip/2019/11/13/VUE中使用flvjs踩坑/视频加载.png">
+  <link rel="canonical" href="https://www.xiaotaotao.vip/2019/11/13/VUE中使用flvjs踩坑/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>VUE中使用flvjs踩坑 | 学习记录</title>
+  <meta name="generator" content="Hexo 3.9.0">
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">学习记录</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://www.xiaotaotao.vip/2019/11/13/VUE中使用flvjs踩坑/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘盼">
+      <meta itemprop="description" content="VUE 前端 Laravel">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="学习记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">VUE中使用flvjs踩坑
+
+          
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-13 16:13:48" itemprop="dateCreated datePublished" datetime="2019-11-13T16:13:48+08:00">2019-11-13</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-06 16:04:26" itemprop="dateModified" datetime="2020-01-06T16:04:26+08:00">2020-01-06</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/VUE/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="在vue项目中使用flvjs"><a href="#在vue项目中使用flvjs" class="headerlink" title="在vue项目中使用flvjs"></a>在vue项目中使用flvjs</h1><p>安装</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install flv.js</span><br></pre></td></tr></table></figure><p>组件内引入</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> flvjs <span class="keyword">from</span> <span class="string">'flv.js'</span></span><br></pre></td></tr></table></figure><p>使用：</p><ol>
+<li>创建一个id为<code>videoElement</code>的<code>video</code>标签；</li>
+<li>在生命周期<code>mounted</code>中使用flvjs，具体使用范例如下； <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">video</span> <span class="attr">id</span>=<span class="string">"videoElement"</span> <span class="attr">controls</span> <span class="attr">autoplay</span> <span class="attr">muted</span> <span class="attr">width</span>=<span class="string">"600"</span> <span class="attr">height</span>=<span class="string">"450"</span>&gt;</span><span class="tag">&lt;/<span class="name">video</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> flvjs <span class="keyword">from</span> <span class="string">'flv.js'</span></span></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line"><span class="javascript">name: <span class="string">'app'</span>,</span></span><br><span class="line">data()&#123;</span><br><span class="line"><span class="javascript">	<span class="keyword">return</span>&#123;&#125;</span></span><br><span class="line">&#125;,</span><br><span class="line">mounted()&#123;</span><br><span class="line"><span class="javascript">	<span class="keyword">if</span> (flvjs.isSupported()) &#123;</span></span><br><span class="line"><span class="javascript">		<span class="keyword">let</span> videoElement = <span class="built_in">document</span>.getElementById(<span class="string">'videoElement'</span>);</span></span><br><span class="line"><span class="javascript">		<span class="keyword">let</span> flvPlayer = flvjs.createPlayer(&#123;</span></span><br><span class="line"><span class="javascript">			type: <span class="string">'flv'</span>,</span></span><br><span class="line"><span class="javascript">			isLive: <span class="literal">true</span>,</span></span><br><span class="line"><span class="javascript">			hasAudio: <span class="literal">false</span>,</span></span><br><span class="line"><span class="javascript">			url: <span class="string">'http://www.xxxxxxx.com:18080/11/22.flv'</span></span></span><br><span class="line">		&#125;);</span><br><span class="line"><span class="javascript">		<span class="built_in">console</span>.log(flvPlayer,<span class="string">'flv对象'</span>)</span></span><br><span class="line">		flvPlayer.attachMediaElement(videoElement);</span><br><span class="line">		flvPlayer.load();</span><br><span class="line">		flvPlayer.play();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;,</span><br><span class="line">methods:&#123;</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol><a id="more"></a>
+
+
+
+
+
+
+
+<h1 id="播放失败原因"><a href="#播放失败原因" class="headerlink" title="播放失败原因"></a>播放失败原因</h1><h2 id="协议不支持"><a href="#协议不支持" class="headerlink" title="协议不支持"></a>协议不支持</h2><p>在一开始我以为flvjs可以播放所有flv格式的视频流，但是经过测试和查看文档发现，这个包仅支持<code>HTTPFLV</code>协议的流，如果使用<code>RTMP</code>协议的流则依然需要使用flash插件。</p>
+<blockquote>
+<p>支持：<a href="http://www.xxxxxxx.com:18080/11/22.flv" target="_blank" rel="noopener">http://www.xxxxxxx.com:18080/11/22.flv</a></p>
+</blockquote>
+<blockquote>
+<p>不支持：rtmp://<a href="http://www.xxxxx.com/api/6538-1.1567494734966.flv" target="_blank" rel="noopener">www.xxxxx.com/api/6538-1.1567494734966.flv</a></p>
+</blockquote>
+<h2 id="音频流没有"><a href="#音频流没有" class="headerlink" title="音频流没有"></a>音频流没有</h2><p>现在在物联网行业中有非常多的摄像头需要接入到web中，而摄像头往往是没有音频的。这时候如果你在界面中看到视频一直在加载，就像下图这样：</p>
+<img src="/2019/11/13/VUE中使用flvjs踩坑/视频加载.png">  
+
+<p>这时候就要考虑是不是直播流中没有包含音频流，如果没有就要设置如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> flvPlayer = flvjs.createPlayer(&#123;</span><br><span class="line">				type: <span class="string">'flv'</span>,</span><br><span class="line">				isLive: <span class="literal">true</span>,</span><br><span class="line">				hasAudio: <span class="literal">false</span>, <span class="comment">//设置这个参数为false</span></span><br><span class="line">				url: <span class="string">'http://www.xxxxxxx.com:18080/11/22.flv'</span></span><br><span class="line">			&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="自动播放失败"><a href="#自动播放失败" class="headerlink" title="自动播放失败"></a>自动播放失败</h2><img src="/2019/11/13/VUE中使用flvjs踩坑/静音报错.png"> 
+
+<p>视频流的播放往往我们都选择自动开始播放，但是自动播放被谷歌等浏览器禁用了，需要单独进行设置。这对于用户体验非常的不好，所以经过一系列的百度谷歌，最后知道了实际上浏览器禁用的是音频自动播放，只要我们在<code>video</code>标签上设置<code>muted</code>属性即可。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">video</span> <span class="attr">id</span>=<span class="string">"videoElement"</span> <span class="attr">controls</span> <span class="attr">autoplay</span> <span class="attr">muted</span> <span class="attr">width</span>=<span class="string">"600"</span> <span class="attr">height</span>=<span class="string">"450"</span>&gt;</span><span class="tag">&lt;/<span class="name">video</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/08/关于JavaScript的分号问题/" rel="next" title="关于JavaScript的分号问题">
+                  <i class="fa fa-chevron-left"></i> 关于JavaScript的分号问题
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/11/28/流媒体协议的认识/" rel="prev" title="流媒体协议的认识">
+                  流媒体协议的认识 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#在vue项目中使用flvjs"><span class="nav-number">1.</span> <span class="nav-text">在vue项目中使用flvjs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#播放失败原因"><span class="nav-number">2.</span> <span class="nav-text">播放失败原因</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#协议不支持"><span class="nav-number">2.1.</span> <span class="nav-text">协议不支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#音频流没有"><span class="nav-number">2.2.</span> <span class="nav-text">音频流没有</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动播放失败"><span class="nav-number">2.3.</span> <span class="nav-text">自动播放失败</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">刘盼</p>
+  <div class="site-description" itemprop="description">VUE 前端 Laravel</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘盼</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
