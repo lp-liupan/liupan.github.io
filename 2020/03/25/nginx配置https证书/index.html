@@ -55,17 +55,17 @@
   };
 </script>
 
-  <meta name="description" content="VUE 前端 Laravel">
+  <meta name="description" content="使用的证书颁发机构使用的Let&amp;#39;s Encrypt颁发机构，该机构颁发免费的https证书并且被大多数厂商认可，可以去他的官方文档查看具体信息（有中文的哦）。同时使用官方推荐的ACME协议软件certbot获取证书，其官网可以根据服务器使用的系统和软件给出相应的安装使用说明，详情见这里。获取证书">
 <meta property="og:type" content="article">
 <meta property="og:title" content="nginx配置https证书">
 <meta property="og:url" content="https://www.xiaotaotao.vip/2020/03/25/nginx配置https证书/index.html">
 <meta property="og:site_name" content="学习记录">
-<meta property="og:description" content="VUE 前端 Laravel">
+<meta property="og:description" content="使用的证书颁发机构使用的Let&amp;#39;s Encrypt颁发机构，该机构颁发免费的https证书并且被大多数厂商认可，可以去他的官方文档查看具体信息（有中文的哦）。同时使用官方推荐的ACME协议软件certbot获取证书，其官网可以根据服务器使用的系统和软件给出相应的安装使用说明，详情见这里。获取证书">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-03-25T03:06:18.402Z">
+<meta property="og:updated_time" content="2020-03-25T03:43:16.738Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="nginx配置https证书">
-<meta name="twitter:description" content="VUE 前端 Laravel">
+<meta name="twitter:description" content="使用的证书颁发机构使用的Let&amp;#39;s Encrypt颁发机构，该机构颁发免费的https证书并且被大多数厂商认可，可以去他的官方文档查看具体信息（有中文的哦）。同时使用官方推荐的ACME协议软件certbot获取证书，其官网可以根据服务器使用的系统和软件给出相应的安装使用说明，详情见这里。获取证书">
   <link rel="canonical" href="https://www.xiaotaotao.vip/2020/03/25/nginx配置https证书/">
 
 
@@ -235,7 +235,24 @@
                 
               
 
-              <time title="创建时间：2020-03-25 11:06:18" itemprop="dateCreated datePublished" datetime="2020-03-25T11:06:18+08:00">2020-03-25</time>
+              <time title="创建时间：2020-03-25 11:06:18 / 修改时间：11:43:16" itemprop="dateCreated datePublished" datetime="2020-03-25T11:06:18+08:00">2020-03-25</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/服务器配置问题/" itemprop="url" rel="index"><span itemprop="name">服务器配置问题</span></a></span>
+
+                
+                
+              
             </span>
           
 
@@ -250,7 +267,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h1 id="使用的证书颁发机构"><a href="#使用的证书颁发机构" class="headerlink" title="使用的证书颁发机构"></a>使用的证书颁发机构</h1><p>使用的<code>Let&#39;s Encrypt</code>颁发机构，该机构颁发免费的https证书并且被大多数厂商认可，可以去他的官方<a href="https://letsencrypt.org/" target="_blank" rel="noopener">文档</a>查看具体信息（有中文的哦）。同时使用官方推荐的ACME协议软件<code>certbot</code>获取证书，其官网可以根据服务器使用的系统和软件给出相应的安装使用说明，详情见<a href="https://certbot.eff.org/" target="_blank" rel="noopener">这里</a>。</p><h1 id="获取证书"><a href="#获取证书" class="headerlink" title="获取证书"></a>获取证书</h1><a id="more"></a>
+<p>在获取证书之前，按照官网的安装文档一般都没有问题。如果到了获取证书这一步，即执行<code>sudo cretbot --nginx</code>不成功，在<code>/etc/letsencrypt/live/</code>文件夹下没有以你域名为名字的文件夹，那么就表示获取证书失败，请按照报错提示百度解决。</p>
+<p>如果一直没有办法成功获取证书，建议或一种模式获取。一般有<code>webroot</code>和<code>standalone</code>两种模式，我选择了后者，他不需要指定网站根目录，自动的启用443端口来验证，下面就是使用<code>standalone</code>这种模式获取证书。</p>
+<blockquote>
+<p>在获取证书之前你需要停止nginx，否则它无法启用443端口</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">certbot certonly --standalone -d 域名</span><br></pre></td></tr></table></figure>
+
+<p>如果没有报错，并且在<code>/etc/letsencrypt/live/域名/</code>文件夹下出现了几个以<code>.pem</code>结尾的文件就表示证书获取成功了。</p>
+<h1 id="nginx配置"><a href="#nginx配置" class="headerlink" title="nginx配置"></a>nginx配置</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">listen         443;</span><br><span class="line">ssl on;</span><br><span class="line">ssl_certificate /etc/letsencrypt/live/域名/fullchain.pem;</span><br><span class="line">ssl_certificate_key /etc/letsencrypt/live/域名/privkey.pem;</span><br></pre></td></tr></table></figure>
+
+<p>设置完毕后重启nginx即可。</p>
+<blockquote>
+<p>注意：在配置ssl_certificate选项的时候，有的文章是配置的cret.pem这个文件，经过验证有些浏览器不认可这个证书，通过阅读它的REDME也可以得知，所以最好使用fullchain.pem这个证书。</p>
+</blockquote>
+<h1 id="自动续期"><a href="#自动续期" class="headerlink" title="自动续期"></a>自动续期</h1><p>Let‘s Encrypt的证书一般是3个月的有效期，为了保证服务不会中断，一般我们都要配置自动续期。不过certbot可以帮我们自动续期，所以不用我们自己去crontab中自己写脚本。</p>
+<p>因为续订的时候需要占用80端口，所以为了避免端口冲突导致续订失败，我们可以把nginx默认的80端口修改为其他端口。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 开启自动续订</span></span><br><span class="line">certbot renew --quiet --no-self-upgrade</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试自动续订是否可用</span></span><br><span class="line">certbot renew --dry-run</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 成功会有如下提示</span></span><br><span class="line">Saving debug log to /var/log/letsencrypt/letsencrypt.log</span><br><span class="line"></span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">Processing /etc/letsencrypt/renewal/liluyang.me.conf</span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">Cert not due for renewal, but simulating renewal for dry run</span><br><span class="line">Plugins selected: Authenticator webroot, Installer None</span><br><span class="line">Renewing an existing certificate</span><br><span class="line">Performing the following challenges:</span><br><span class="line">http-01 challenge for liluyang.me</span><br><span class="line">http-01 challenge for www.liluyang.me</span><br><span class="line">Waiting for verification...</span><br><span class="line">Cleaning up challenges</span><br><span class="line"></span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">new certificate deployed without reload, fullchain is</span><br><span class="line">/etc/letsencrypt/live/liluyang.me/fullchain.pem</span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line"></span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">** DRY RUN: simulating 'certbot renew' close to cert expiry</span><br><span class="line">**          (The test certificates below have not been saved.)</span><br><span class="line"></span><br><span class="line">Congratulations, all renewals succeeded. The following certs have been renewed:</span><br><span class="line">  /etc/letsencrypt/live/liluyang.me/fullchain.pem (success)</span><br><span class="line">** DRY RUN: simulating 'certbot renew' close to cert expiry</span><br><span class="line">**          (The test certificates above have not been saved.)</span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：如果进行手动续订的时候报错The following certs are not due for renewal yet，说明证书还没到期不用续订。</p>
+</blockquote>
+
     </div>
 
     
@@ -323,6 +362,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用的证书颁发机构"><span class="nav-number">1.</span> <span class="nav-text">使用的证书颁发机构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#获取证书"><span class="nav-number">2.</span> <span class="nav-text">获取证书</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx配置"><span class="nav-number">3.</span> <span class="nav-text">nginx配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自动续期"><span class="nav-number">4.</span> <span class="nav-text">自动续期</span></a></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
